@@ -16,6 +16,19 @@ namespace Aplication.Services
         {
             _context = context;
         }
+        public decimal CalcularCuotaMensual(decimal montoPrestamo, decimal tasaInteresAnual, int plazoMeses)
+        {
+            if (montoPrestamo <= 0 || tasaInteresAnual <= 0 || plazoMeses <= 0)
+                throw new ArgumentException("Los valores del préstamo, tasa de interés y plazo deben ser positivos.");
+
+            // Calcular la tasa mensual
+            decimal tasaMensual = tasaInteresAnual / 100 / 12;
+
+            // Fórmula del Método Francés
+            decimal cuotaMensual = (montoPrestamo * tasaMensual) / (1 - (decimal)Math.Pow((double)(1 + tasaMensual), -plazoMeses));
+
+            return cuotaMensual;
+        }
 
         // Obtener todos los créditos
         public async Task<List<Credito>> ObtenerTodosAsync()
@@ -47,14 +60,16 @@ namespace Aplication.Services
 
             credito.Estado = "Pendiente";
             credito.FechaSolicitud = DateTime.UtcNow;
-            credito.SaldoPendiente = credito.Monto; // Aseguramos que el saldo pendiente es igual al monto
+            credito.SaldoPendiente = credito.Monto;
 
-            Console.WriteLine("hola");
+        
+            credito.CuotaMensual = CalcularCuotaMensual(credito.Monto, credito.TasaInteres, credito.PlazoMeses);
+
             _context.Creditos.Add(credito);
             await _context.SaveChangesAsync();
-            Console.WriteLine("hola2");
             return true;
         }
+
 
 
         // Obtener la cantidad de créditos por cliente

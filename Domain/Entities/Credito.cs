@@ -21,6 +21,7 @@ namespace Domain.Entities
 
         [Required]
         public int PlazoMeses { get; set; }
+        public decimal CuotaMensual { get; set; }
 
         public decimal SaldoPendiente { get; set; }
 
